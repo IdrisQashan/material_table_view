@@ -200,13 +200,36 @@ class TableContentLayoutState extends State<TableContentLayout>
     stickyOffset ??= widget.stickyHorizontalOffset.value;
     final stickyLeftOffset = (stickyOffset < 0 ? stickyOffset : 0);
     final stickyRightOffset = (stickyOffset > 0 ? stickyOffset : 0);
+    // Explicit edges are reserved before scroll-relative anchoring. Capacity
+    // rejection leaves the column in the scrollable sequence without changing intent.
+    final explicit = <int>{};
+    double leadingReserved = 0, trailingReserved = 0;
+    for (var i = 0; i < columns.length; i++) {
+      final column = columns[i];
+      if (column.fixedEdge == TableColumnEdge.leading && column.frozenAt(freezePriority)) {
+        explicit.add(i);
+        columnsLeft.add(i);
+        columnOffsetsLeft.add(widget.scrollPadding.left + leadingReserved);
+        leadingReserved += column.width;
+      }
+    }
+    for (var i = columns.length - 1; i >= 0; i--) {
+      final column = columns[i];
+      if (column.fixedEdge == TableColumnEdge.trailing && column.frozenAt(freezePriority)) {
+        explicit.add(i);
+        columnsRight.add(i);
+        trailingReserved += column.width;
+        columnOffsetsRight.add(-widget.scrollPadding.right - trailingReserved);
+      }
+    }
     for (var i = 0,
-            leftOffset = widget.scrollPadding.left + stickyLeftOffset,
+            leftOffset = widget.scrollPadding.left + stickyLeftOffset + leadingReserved,
             centerOffset = -horizontalOffsetPixels - stickyLeftOffset,
-            rightOffset = -widget.scrollPadding.right + stickyRightOffset;
+            rightOffset = -widget.scrollPadding.right + stickyRightOffset - trailingReserved;
         i < columns.length;
         i++) {
       final column = columns[i];
+      if (explicit.contains(i)) continue;
       if (column.frozenAt(freezePriority) && centerOffset <= 0) {
         if (column.sticky && sticky) {
           _minStickyHorizontalOffset -= column.width;
@@ -222,7 +245,7 @@ class TableContentLayoutState extends State<TableContentLayout>
               (column.frozenAt(freezePriority)
                   ? column.width + widget.scrollPadding.right
                   : 0) <=
-          widget.width) {
+          widget.width - trailingReserved) {
         if (centerOffset >= -column.width) {
           columnsCenter.add(i);
           columnOffsetsCenter.add(centerOffset);
@@ -233,6 +256,7 @@ class TableContentLayoutState extends State<TableContentLayout>
         i = max(0, i - 2);
         for (int j = columns.length - 1; j > i && j >= 0; j--) {
           final column = columns[j];
+          if (explicit.contains(j)) continue;
           if (column.frozenAt(freezePriority)) {
             if (column.sticky && sticky) {
               _maxStickyHorizontalOffset += column.width;

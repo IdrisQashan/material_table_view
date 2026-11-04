@@ -2,9 +2,6 @@ import 'package:flutter/widgets.dart';
 
 /// Holds properties to enable row reordering in a table.
 class TableRowReorder {
-  /// See [SliverReorderableList.findChildIndexCallback].
-  final ChildIndexGetter? findChildIndexCallback;
-
   /// See [SliverReorderableList.onReorder].
   final ReorderCallback onReorder;
 
@@ -24,7 +21,6 @@ class TableRowReorder {
     required this.onReorder,
     this.onReorderStart,
     this.onReorderEnd,
-    this.findChildIndexCallback,
     this.proxyDecorator,
     this.autoScrollerVelocityScalar,
   });

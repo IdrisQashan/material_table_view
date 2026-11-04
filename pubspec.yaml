@@ -4,7 +4,8 @@ description: Comprehensive, feature-rich and intuitive UI/UX widget solution for
 repository: 'https://github.com/NikolayNIK/material_table_view'
 issue_tracker: 'https://github.com/NikolayNIK/material_table_view/issues'
 
-version: 5.5.2
+version: 5.5.2+alshamel.1
+publish_to: none
 
 topics:
   - table
@@ -16,10 +17,6 @@ topics:
 environment:
   sdk: ">=2.17.1 <4.0.0"
   flutter: ">=3.35.0"
-
-screenshots:
-  - description: 'Regular box TableView demo running on Windows laptop'
-    path: 'screenshots/demo-regular-box-windows-light.png'
 
 dependencies:
   flutter:
@@ -35,4 +32,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-

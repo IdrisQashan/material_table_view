@@ -494,6 +494,7 @@ class _WidgetState extends State<_Widget>
 
   List<TableColumn>? _recentlyChangedColumns;
   TableContentLayoutData? _recentlyChangedTableContentLayoutData;
+  final Set<Ticker> _translationTickers = {};
 
   TableColumnControlHandlesPopupRoute get route => widget.route;
 
@@ -595,6 +596,11 @@ class _WidgetState extends State<_Widget>
       ?..stop()
       ..dispose();
 
+    for (final ticker in _translationTickers) {
+      ticker.dispose();
+    }
+    _translationTickers.clear();
+
     if (route._tableContentLayoutState.foregroundColumnKey ==
         route._targetColumnKey) {
       route._tableContentLayoutState.foregroundColumnKey = null;
@@ -671,8 +677,8 @@ class _WidgetState extends State<_Widget>
   Widget build(BuildContext context) {
     if (!route._targetCellRenderObject.attached ||
         !route._tableContentLayoutState.mounted ||
-        columnIndex >= route._tableViewState.columns.length ||
-        route._tableViewState.columns[columnIndex].key !=
+        columnIndex >= columns.length ||
+        columns[columnIndex].key !=
             route._targetColumnKey) {
       abort();
 
@@ -1340,8 +1346,9 @@ class _WidgetState extends State<_Widget>
     late Ticker ticker;
 
     void stop() {
+      _translationTickers.remove(ticker);
       ticker
-        ..stop()
+        ..stop(canceled: false)
         ..dispose();
     }
 
@@ -1359,7 +1366,7 @@ class _WidgetState extends State<_Widget>
     Duration lastElapsed = Duration.zero;
 
     int? findCurrentGlobalIndex() {
-      if (currentGlobalIndex > columns.length ||
+      if (currentGlobalIndex >= columns.length ||
           (columns[currentGlobalIndex]).key != key) {
         for (var i = 0; i < columns.length; i++) {
           if (columns[i].key == key) {
@@ -1420,14 +1427,18 @@ class _WidgetState extends State<_Widget>
       correctHandlesIfNecessary(column, deltaTranslation);
     });
 
+    _translationTickers.add(ticker);
     final onComplete = ticker.start();
 
     onComplete.orCancel.then((_) {
+      if (!mounted) return;
       final index = findCurrentGlobalIndex();
       if (index == null) return;
       final column = columns[index];
       onColumnTranslate(index, column.translation + translationLeft);
       correctHandlesIfNecessary(column, translationLeft);
+    }, onError: (Object error, StackTrace stack) {
+      if (error is! TickerCanceled) Error.throwWithStackTrace(error, stack);
     });
   }
 

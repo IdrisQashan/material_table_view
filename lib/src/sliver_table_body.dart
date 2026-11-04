@@ -15,6 +15,7 @@ class SliverTableBody extends StatelessWidget {
   final TablePlaceholderBuilder placeholderBuilder;
   final TablePlaceholderRowBuilder? placeholderRowBuilder;
   final TableRowReorder? rowReorder;
+  final ChildIndexGetter? findChildIndexCallback;
   final bool addAutomaticKeepAlives;
   final bool useHigherScrollable;
 
@@ -30,6 +31,7 @@ class SliverTableBody extends StatelessWidget {
     required this.addAutomaticKeepAlives,
     required this.useHigherScrollable,
     required this.rowReorder,
+    required this.findChildIndexCallback,
   });
 
   @override
@@ -54,7 +56,7 @@ class SliverTableBody extends StatelessWidget {
         useHigherScrollable: useHigherScrollable,
         addAutomaticKeepAlives: addAutomaticKeepAlives,
         onReorder: rowReorder.onReorder,
-        findChildIndexCallback: rowReorder.findChildIndexCallback,
+        findChildIndexCallback: findChildIndexCallback,
         onReorderStart: rowReorder.onReorderStart,
         onReorderEnd: rowReorder.onReorderEnd,
         proxyDecorator: rowReorder.proxyDecorator,
@@ -65,6 +67,7 @@ class SliverTableBody extends StatelessWidget {
       childCount: rowCount,
       addRepaintBoundaries: false,
       addAutomaticKeepAlives: addAutomaticKeepAlives,
+      findChildIndexCallback: findChildIndexCallback,
       itemBuilder,
     );
 

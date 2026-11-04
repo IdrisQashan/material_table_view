@@ -36,6 +36,7 @@ class SliverTableView extends TableView {
     super.minScrollableWidth,
     super.minScrollableWidthRatio,
     super.rowReorder,
+    super.findChildIndexCallback,
     super.addAutomaticKeepAlives,
     required super.rowCount,
     required super.rowHeight,
@@ -198,6 +199,7 @@ class _SliverTableViewState extends State<SliverTableView>
                                       rowPrototype: widget.rowPrototype,
                                       rowBuilder: widget.rowBuilder,
                                       rowReorder: widget.rowReorder,
+                                      findChildIndexCallback: widget.findChildIndexCallback,
                                       placeholderBuilder:
                                           widget.placeholderBuilder,
                                       placeholderRowBuilder:

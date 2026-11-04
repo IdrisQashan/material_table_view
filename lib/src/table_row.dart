@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -111,13 +110,10 @@ class _TableViewRowElement extends RenderObjectElement {
   }
 
   @override
-  // ignore: must_call_super
   void didChangeDependencies() {
-    final data = TableContentLayout.of(this);
-
-    _updateRenderObject(data);
-
-    _updateChildren(data);
+    // Element.activate calls this before recursively activating the children.
+    // Reconcile them in performRebuild, after the entire subtree is active.
+    super.didChangeDependencies();
   }
 
   @override
@@ -240,24 +236,19 @@ class _TableViewRowElement extends RenderObjectElement {
           newSlot,
         ) as _TableViewCellElement);
       } else {
-        // because we update children in [didChangeDependencies],
-        // we might end up accidentally updating an inactive child before it is removed,
-        // so we just skip those ones in debug mode as to not trigger an assertion
-        if (!kDebugMode || child.debugIsActive) {
-          updateSlotForChild(child, newSlot);
+        updateSlotForChild(child, newSlot);
 
-          final oldWidget = child.widget as _TableViewCell;
-          if (!identical(oldWidget.cellBuilder, widget.cellBuilder) ||
-              oldWidget.index != columnIndex) {
-            child.update(_TableViewCell(
-              key: columnKey,
-              cellBuilder: widget.cellBuilder,
-              index: columnIndex,
-            ));
-          }
-
-          child._updated = true;
+        final oldWidget = child.widget as _TableViewCell;
+        if (!identical(oldWidget.cellBuilder, widget.cellBuilder) ||
+            oldWidget.index != columnIndex) {
+          child.update(_TableViewCell(
+            key: columnKey,
+            cellBuilder: widget.cellBuilder,
+            index: columnIndex,
+          ));
         }
+
+        child._updated = true;
       }
     }
   }

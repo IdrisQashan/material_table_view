@@ -38,6 +38,7 @@ class TableView extends StatefulWidget {
     this.minScrollableWidth,
     this.minScrollableWidthRatio,
     this.rowReorder,
+    this.findChildIndexCallback,
     this.addAutomaticKeepAlives = false,
     required this.rowCount,
     required this.rowHeight,
@@ -112,6 +113,11 @@ class TableView extends StatefulWidget {
   /// for currently live widget will lead to state loss of all the rows and
   /// cells.
   final TableRowReorder? rowReorder;
+
+  /// Maps a keyed row to its current index when membership or order changes.
+  /// Applies independently of whether drag reordering is enabled.
+  /// See [SliverChildBuilderDelegate.findChildIndexCallback].
+  final ChildIndexGetter? findChildIndexCallback;
 
   /// Whether to wrap each row in an [AutomaticKeepAlive].
   ///
@@ -374,7 +380,6 @@ class _TableViewState extends State<TableView>
               offset: horizontalScrollbarOffset,
               transformHitTests: false,
               child: Scrollable(
-                key: _controller.horizontalScrollKey,
                 controller: _controller.horizontalScrollController,
                 clipBehavior: Clip.none,
                 axisDirection: textDirectionToAxisDirection(textDirection),
@@ -448,7 +453,6 @@ class _TableViewState extends State<TableView>
                         controller: _controller.verticalScrollController,
                         style: style.scrollbars.vertical,
                         child: Scrollable(
-                          key: _controller.verticalScrollKey,
                           controller: _controller.verticalScrollController,
                           clipBehavior: Clip.none,
                           axisDirection: AxisDirection.down,
@@ -500,6 +504,7 @@ class _TableViewState extends State<TableView>
           useHigherScrollable: false,
           addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
           rowReorder: widget.rowReorder,
+          findChildIndexCallback: widget.findChildIndexCallback,
         ),
       ),
     ];

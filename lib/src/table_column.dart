@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 
+/// A logical fixed edge, independent of horizontal scroll position.
+enum TableColumnEdge { leading, trailing }
+
 /// Description of a fixed-width column to be built by a [TableView] widget.
 @immutable
 class TableColumn {
@@ -7,6 +10,7 @@ class TableColumn {
     required this.width,
     this.freezePriority = 0,
     this.sticky = false,
+    this.fixedEdge,
     this.flex = 0,
     this.translation = 0,
     this.minResizeWidth,
@@ -30,6 +34,11 @@ class TableColumn {
   /// When set to true, frozen column will be scrolled of the edge of the screen
   /// but will come back upon scrolling in the other direction.
   final bool sticky;
+
+  /// The fixed edge when this column survives the capacity freeze threshold.
+  ///
+  /// Without an explicit edge, freezable columns retain scroll-relative anchoring.
+  final TableColumnEdge? fixedEdge;
 
   /// When set higher than zero, column will expand to fill the remaining
   /// width in proportion to the total flex of all columns.
@@ -60,6 +69,7 @@ class TableColumn {
     double? width,
     int? freezePriority,
     bool? sticky,
+    TableColumnEdge? fixedEdge,
     int? flex,
     double? translation,
     double? maxResizeWidth,
@@ -69,6 +79,7 @@ class TableColumn {
         width: width ?? this.width,
         freezePriority: freezePriority ?? this.freezePriority,
         sticky: sticky ?? this.sticky,
+        fixedEdge: fixedEdge ?? this.fixedEdge,
         flex: flex ?? this.flex,
         translation: translation ?? this.translation,
         maxResizeWidth: maxResizeWidth ?? this.maxResizeWidth,

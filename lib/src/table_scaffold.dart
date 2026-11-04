@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_table_view/src/table_horizontal_divider.dart';
@@ -438,11 +439,13 @@ class RenderTableScaffold extends RenderBox {
             minHeight: 0,
             maxHeight: height.isInfinite
                 ? double.infinity
-                : height -
-                    headerHeight -
-                    headerDividerHeight -
-                    footerHeight -
-                    footerDividerHeight,
+                : math.max(
+                    0.0,
+                    height -
+                        headerHeight -
+                        headerDividerHeight -
+                        footerHeight -
+                        footerDividerHeight),
           ),
         );
 
@@ -456,17 +459,20 @@ class RenderTableScaffold extends RenderBox {
             footerHeight;
       }
 
-      size = Size(width, height);
+      size = constraints.constrain(Size(width, height));
+      height = size.height;
     } else {
       if (body != null) {
         body.layout(
           BoxConstraints.tightFor(
             width: width,
-            height: height -
-                headerHeight -
-                headerDividerHeight -
-                footerHeight -
-                footerDividerHeight,
+            height: math.max(
+                0.0,
+                height -
+                    headerHeight -
+                    headerDividerHeight -
+                    footerHeight -
+                    footerDividerHeight),
           ),
         );
 
